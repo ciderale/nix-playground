@@ -4,7 +4,7 @@ let
     # that affect all ruby related things in nixpkgs
     ruby = self.ruby_2_5;
   };
-  pkgs = import <nixpkgs> {overlays=[overlay];};
+  pkgs = import ./nixpkgs.nix {overlays=[overlay];};
 in
 
 with pkgs;
