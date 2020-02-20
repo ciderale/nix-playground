@@ -42,6 +42,6 @@ in stdenv.mkDerivation {
 
   shellHook = ''
     # an extra goodie, this will be run when entering the nix-shell
-    ${demonstrateSuccess}/bin/demo
+    ${demonstrateSuccess}/bin/demo >&2  # direnv is picky on stdout!
   '';
 }
