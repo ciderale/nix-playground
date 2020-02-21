@@ -6,6 +6,7 @@ let
 
 myPython = python37.withPackages (ps: with ps; [
   numpy pandas matplotlib ipython
+  jupyter
 ]);
 
 in
