@@ -2,10 +2,12 @@ let
   pkgs = import ../nixpkgs.nix {};
   n2n = import ./. {pkgs=pkgs;};
 
+  dummyFolder = "tmp";
+
   np = n2n // {
     shell = n2n.shell.override {
       buildInputs = with pkgs.darwin.apple_sdk.frameworks; [CoreServices];
-      src = ./tmp;
+      src = ./. + "/${dummyFolder}";
     };
   };
 
@@ -13,9 +15,8 @@ let
   nodix = pkgs.writers.writeBashBin "nodix" ''
     rm -rf ./node_modules
     node2nix -d --nodejs-12 -l package-lock.json
-    TD=./tmp
-    mkdir -p $TD
-    cp package{,-lock}.json $TD
+    mkdir -p ./${dummyFolder}
+    cp package{,-lock}.json ./${dummyFolder}
   '';
 in
 with pkgs;
