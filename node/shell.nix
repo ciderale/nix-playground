@@ -1,6 +1,8 @@
 let
   # overlay to select the nodejs version
-  selectNodejs = nodeVersion: self: super: {
+  selectNodejs = nodeVersion1: self: super: let
+    nodeVersion = toString nodeVersion1;
+  in {
     nodejs = super."nodejs-${nodeVersion}_x";
     njsPkgs = super."nodePackages_${nodeVersion}_x".node2nix;
 
@@ -15,7 +17,7 @@ let
 
   # load your favourite nixpkgs set and select the nodejs version
   # NOTE: select the nodejs version you like to use
-  pkgs = import ../nixpkgs.nix { overlays = [(selectNodejs "12")]; };
+  pkgs = import ../nixpkgs.nix { overlays = [(selectNodejs 12)]; };
 
   # filter to retain only package.json and its lock file
   # this is minimal, when only npm depenency shall be managed
