@@ -25,23 +25,23 @@ let
   # NOTE: select the nodejs version you like to use
   pkgs = import ../nixpkgs.nix { overlays = [(selectNodejs 12)]; };
 
+in with pkgs; let
+
   # load the node2nix generated default.nix file
   n2n = import ./. { inherit pkgs; };
   # and override to slightly customize the generated node project dependencies
   myNodePackage = n2n.shell.override {
     # NOTE: this may require adjustments to your selected npm packages
     # the current example depends on fsevents which requires CoreService os Mac
-    buildInputs = pkgs.lib.optionals pkgs.stdenv.isDarwin (
-      with pkgs.darwin.apple_sdk.frameworks; [CoreServices]
+    buildInputs = lib.optionals stdenv.isDarwin (
+      with darwin.apple_sdk.frameworks; [CoreServices]
     );
 
     # ignore everything, but the package dependency definition
     # we only fetch dependencies, don't package the project for nix
-    src = builtins.filterSource pkgs.onlyPackageJsonOrLock ./.;
+    src = builtins.filterSource onlyPackageJsonOrLock ./.;
   };
 in
-
-with pkgs;
 
 mkShell {
   # inherit the shellHook (and its nodeDependency)
