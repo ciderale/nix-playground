@@ -4,14 +4,14 @@ let
     nodeVersion = toString nodeVersion1;
   in {
     nodejs = super."nodejs-${nodeVersion}_x";
-    njsPkgs = super."nodePackages_${nodeVersion}_x".node2nix;
+    nodePackages = super."nodePackages_${nodeVersion}_x".node2nix;
 
     # the command to generate nix expressions from package-lock.json
     # run 'npm install --save[-dev] your depenency' to generate the lock file
     # run 'nodeix' to generate the necessary nix files replicating the lock
     nodix = super.writers.writeBashBin "nodix" ''
       rm -rf ./node_modules # node2nix complains as node_modules interfer
-      ${self.njsPkgs}/bin/node2nix -d --nodejs-${nodeVersion} -l package-lock.json
+      ${self.nodePackages}/bin/node2nix -d --nodejs-${nodeVersion} -l package-lock.json
     '';
 
     # filter to retain only package.json and its lock file
