@@ -19,6 +19,15 @@ let
     onlyPackageJsonOrLock = path: _:
       let baseName = baseNameOf (toString path);
        in baseName == "package.json" || baseName == "package-lock.json";
+
+    importNodeDependencies = path: buildInputs: let
+      n2n = import path { pkgs=self; };
+    in n2n.shell.override {
+      buildInputs = buildInputs;
+      # ignore everything, but the package dependency definition
+      # we only fetch dependencies, don't package the project for nix
+      src = builtins.filterSource self.onlyPackageJsonOrLock ./.;
+    };
   };
 
   # load your favourite nixpkgs set and select the nodejs version
@@ -28,19 +37,12 @@ let
 in with pkgs; let
 
   # load the node2nix generated default.nix file
-  n2n = import ./. { inherit pkgs; };
   # and override to slightly customize the generated node project dependencies
-  myNodePackage = n2n.shell.override {
-    # NOTE: this may require adjustments to your selected npm packages
-    # the current example depends on fsevents which requires CoreService os Mac
-    buildInputs = lib.optionals stdenv.isDarwin (
+  # NOTE: this may require adjustments to your selected npm packages
+  # the current example depends on fsevents which requires CoreService os Mac
+  myNodePackage = importNodeDependencies ./. (lib.optionals stdenv.isDarwin (
       with darwin.apple_sdk.frameworks; [CoreServices]
-    );
-
-    # ignore everything, but the package dependency definition
-    # we only fetch dependencies, don't package the project for nix
-    src = builtins.filterSource onlyPackageJsonOrLock ./.;
-  };
+  ));
 in
 
 mkShell {
