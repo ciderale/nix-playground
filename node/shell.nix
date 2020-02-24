@@ -20,10 +20,10 @@ let
       let baseName = baseNameOf (toString path);
        in baseName == "package.json" || baseName == "package-lock.json";
 
-    importNodeDependencies = path: buildInputs: let
+    importNodeDependencies = { path, buildInputs }: let
       n2n = import path { pkgs=self; };
     in n2n.shell.override {
-      buildInputs = buildInputs;
+      inherit buildInputs;
       # ignore everything, but the package dependency definition
       # we only fetch dependencies, don't package the project for nix
       src = builtins.filterSource self.onlyPackageJsonOrLock ./.;
@@ -40,9 +40,12 @@ in with pkgs; let
   # and override to slightly customize the generated node project dependencies
   # NOTE: this may require adjustments to your selected npm packages
   # the current example depends on fsevents which requires CoreService os Mac
-  myNodePackage = importNodeDependencies ./. (lib.optionals stdenv.isDarwin (
+  myNodePackage = importNodeDependencies {
+    path = ./.;
+    buildInputs = lib.optionals stdenv.isDarwin (
       with darwin.apple_sdk.frameworks; [CoreServices]
-  ));
+    );
+  };
 in
 
 mkShell {
