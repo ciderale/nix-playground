@@ -3,7 +3,7 @@ let
   n2n = import ./. {pkgs=pkgs;};
 
   np = n2n // {
-    webpack = n2n.webpack.override {
+    shell = n2n.shell.override {
       buildInputs = with pkgs.darwin.apple_sdk.frameworks; [CoreServices];
     };
   };
@@ -13,20 +13,12 @@ let
     rm -rf ./node_modules
     node2nix -d --nodejs-12 -l package-lock.json
   '';
-
-  # this exposes variant exposes all the defined packages
-  # and thus suitable for overrides
-  nodix2 = pkgs.writers.writeBashBin "nodix2" ''
-    rm -rf ./node_modules
-    node2nix --nodejs-12 -i <(cat package.json| jq '.devDependencies | to_entries | map({(.key): .value})')
-  '';
 in
 with pkgs;
 
 mkShell {
-  #inherit (np.shell) shellHook nodeDependencies;
-  buildInputs = [nodejs-12_x nodePackages_12_x.node2nix 
-   nodix nodix2
- #   np.webpack
+  inherit (np.shell) shellHook nodeDependencies;
+  buildInputs = [nodejs-12_x nodePackages_12_x.node2nix
+   nodix np.shell
   ];
 }
