@@ -1,5 +1,10 @@
 let
-pkgs = import ../nixpkgs.nix {};
-n2n = import ./. {pkgs=pkgs;};
+  pkgs = import ../nixpkgs.nix {};
+  n2n = import ./. {pkgs=pkgs;};
 in
-n2n.shell
+with pkgs;
+
+mkShell {
+  inherit (n2n.shell) shellHook nodeDependencies;
+  buildInputs = [nodejs-12_x];
+}
