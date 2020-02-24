@@ -2,12 +2,14 @@ let
   pkgs = import ../nixpkgs.nix {};
   n2n = import ./. {pkgs=pkgs;};
 
-  dummyFolder = "tmp";
+  onlyPackageJsons = path: _:
+    let baseName = baseNameOf (toString path);
+     in baseName == "package.json" || baseName == "package-lock.json";
 
   np = n2n // {
     shell = n2n.shell.override {
       buildInputs = with pkgs.darwin.apple_sdk.frameworks; [CoreServices];
-      src = ./. + "/${dummyFolder}";
+      src = builtins.filterSource onlyPackageJsons ./.;
     };
   };
 
@@ -15,8 +17,6 @@ let
   nodix = pkgs.writers.writeBashBin "nodix" ''
     rm -rf ./node_modules
     node2nix -d --nodejs-12 -l package-lock.json
-    mkdir -p ./${dummyFolder}
-    cp package{,-lock}.json ./${dummyFolder}
   '';
 in
 with pkgs;
