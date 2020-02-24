@@ -220,15 +220,6 @@ let
         sha512 = "RO1ibKvd27e6FEShVFfPALuHI3WjSVNeK5FIsmme/LYRNxjKuNj+Dt7bucLa6NdSv3JcVTyMlm9kGR84z1XpaQ==";
       };
     };
-    "angular-1.7.9" = {
-      name = "angular";
-      packageName = "angular";
-      version = "1.7.9";
-      src = fetchurl {
-        url = "https://registry.npmjs.org/angular/-/angular-1.7.9.tgz";
-        sha512 = "5se7ZpcOtu0MBFlzGv5dsM1quQDoDeUTwZrWjGtTNA7O88cD8TEk5IEKCTDa3uECV9XnvKREVUr7du1ACiWGFQ==";
-      };
-    };
     "anymatch-2.0.0" = {
       name = "anymatch";
       packageName = "anymatch";
@@ -1507,15 +1498,6 @@ let
         sha512 = "7AO748wWnIhNqAuaty2ZWHkQHRSNfPVIsPIfwEOWO22AmaoVrWavlOcMR5nzTLNYvp36X220/maaRsrec1G65A==";
       };
     };
-    "lodash-4.17.15" = {
-      name = "lodash";
-      packageName = "lodash";
-      version = "4.17.15";
-      src = fetchurl {
-        url = "https://registry.npmjs.org/lodash/-/lodash-4.17.15.tgz";
-        sha512 = "8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==";
-      };
-    };
     "lru-cache-5.1.1" = {
       name = "lru-cache";
       packageName = "lru-cache";
@@ -2632,15 +2614,6 @@ let
         sha512 = "i6dHe3EyLjMmDlU1/bGQpEw25XSjkJULPuAVKCbNRefQVq48yXKUpwg538F7AZTf9kyr57zj++pQFltUa5H7yA==";
       };
     };
-    "webpack-4.41.6" = {
-      name = "webpack";
-      packageName = "webpack";
-      version = "4.41.6";
-      src = fetchurl {
-        url = "https://registry.npmjs.org/webpack/-/webpack-4.41.6.tgz";
-        sha512 = "yxXfV0Zv9WMGRD+QexkZzmGIh54bsvEs+9aRWxnN8erLWEOehAKUTeNBoUbA6HPEZPlRo7KDi2ZcNveoZgK9MA==";
-      };
-    };
     "webpack-sources-1.4.3" = {
       name = "webpack-sources";
       packageName = "webpack-sources";
@@ -2696,11 +2669,16 @@ let
       };
     };
   };
-  args = {
-    name = "node-sample";
-    packageName = "node-sample";
-    version = "1.0.0";
-    src = ./.;
+in
+{
+  webpack = nodeEnv.buildNodePackage {
+    name = "webpack";
+    packageName = "webpack";
+    version = "4.41.6";
+    src = fetchurl {
+      url = "https://registry.npmjs.org/webpack/-/webpack-4.41.6.tgz";
+      sha512 = "yxXfV0Zv9WMGRD+QexkZzmGIh54bsvEs+9aRWxnN8erLWEOehAKUTeNBoUbA6HPEZPlRo7KDi2ZcNveoZgK9MA==";
+    };
     dependencies = [
       sources."@webassemblyjs/ast-1.8.5"
       sources."@webassemblyjs/floating-point-hex-parser-1.8.5"
@@ -2726,7 +2704,6 @@ let
       sources."ajv-6.12.0"
       sources."ajv-errors-1.0.1"
       sources."ajv-keywords-3.4.1"
-      sources."angular-1.7.9"
       (sources."anymatch-2.0.0" // {
         dependencies = [
           sources."normalize-path-2.1.1"
@@ -2751,9 +2728,6 @@ let
       (sources."base-0.11.2" // {
         dependencies = [
           sources."define-property-1.0.0"
-          sources."is-accessor-descriptor-1.0.0"
-          sources."is-data-descriptor-1.0.0"
-          sources."is-descriptor-1.0.2"
         ];
       })
       sources."base64-js-1.3.1"
@@ -2788,6 +2762,18 @@ let
       (sources."class-utils-0.3.6" // {
         dependencies = [
           sources."define-property-0.2.5"
+          (sources."is-accessor-descriptor-0.1.6" // {
+            dependencies = [
+              sources."kind-of-3.2.2"
+            ];
+          })
+          (sources."is-data-descriptor-0.1.4" // {
+            dependencies = [
+              sources."kind-of-3.2.2"
+            ];
+          })
+          sources."is-descriptor-0.1.6"
+          sources."kind-of-5.1.0"
         ];
       })
       sources."collection-visit-1.0.0"
@@ -2808,13 +2794,7 @@ let
       sources."cyclist-1.0.1"
       sources."debug-2.6.9"
       sources."decode-uri-component-0.2.0"
-      (sources."define-property-2.0.2" // {
-        dependencies = [
-          sources."is-accessor-descriptor-1.0.0"
-          sources."is-data-descriptor-1.0.0"
-          sources."is-descriptor-1.0.2"
-        ];
-      })
+      sources."define-property-2.0.2"
       sources."des.js-1.0.1"
       sources."diffie-hellman-5.0.3"
       sources."domain-browser-1.2.0"
@@ -2837,6 +2817,18 @@ let
         dependencies = [
           sources."define-property-0.2.5"
           sources."extend-shallow-2.0.1"
+          (sources."is-accessor-descriptor-0.1.6" // {
+            dependencies = [
+              sources."kind-of-3.2.2"
+            ];
+          })
+          (sources."is-data-descriptor-0.1.4" // {
+            dependencies = [
+              sources."kind-of-3.2.2"
+            ];
+          })
+          sources."is-descriptor-0.1.6"
+          sources."kind-of-5.1.0"
         ];
       })
       (sources."extend-shallow-3.0.2" // {
@@ -2848,9 +2840,6 @@ let
         dependencies = [
           sources."define-property-1.0.0"
           sources."extend-shallow-2.0.1"
-          sources."is-accessor-descriptor-1.0.0"
-          sources."is-data-descriptor-1.0.0"
-          sources."is-descriptor-1.0.2"
         ];
       })
       sources."fast-deep-equal-3.1.1"
@@ -2895,23 +2884,11 @@ let
       sources."infer-owner-1.0.4"
       sources."inflight-1.0.6"
       sources."inherits-2.0.4"
-      (sources."is-accessor-descriptor-0.1.6" // {
-        dependencies = [
-          sources."kind-of-3.2.2"
-        ];
-      })
+      sources."is-accessor-descriptor-1.0.0"
       sources."is-binary-path-1.0.1"
       sources."is-buffer-1.1.6"
-      (sources."is-data-descriptor-0.1.4" // {
-        dependencies = [
-          sources."kind-of-3.2.2"
-        ];
-      })
-      (sources."is-descriptor-0.1.6" // {
-        dependencies = [
-          sources."kind-of-5.1.0"
-        ];
-      })
+      sources."is-data-descriptor-1.0.0"
+      sources."is-descriptor-1.0.2"
       sources."is-extendable-0.1.1"
       sources."is-extglob-2.1.1"
       sources."is-glob-4.0.1"
@@ -2932,7 +2909,6 @@ let
       sources."loader-runner-2.4.0"
       sources."loader-utils-1.4.0"
       sources."locate-path-3.0.0"
-      sources."lodash-4.17.15"
       sources."lru-cache-5.1.1"
       sources."make-dir-2.1.0"
       sources."mamacro-0.0.3"
@@ -2972,6 +2948,13 @@ let
       (sources."object-copy-0.1.0" // {
         dependencies = [
           sources."define-property-0.2.5"
+          sources."is-accessor-descriptor-0.1.6"
+          sources."is-data-descriptor-0.1.4"
+          (sources."is-descriptor-0.1.6" // {
+            dependencies = [
+              sources."kind-of-5.1.0"
+            ];
+          })
           sources."kind-of-3.2.2"
         ];
       })
@@ -3037,14 +3020,23 @@ let
         dependencies = [
           sources."define-property-0.2.5"
           sources."extend-shallow-2.0.1"
+          (sources."is-accessor-descriptor-0.1.6" // {
+            dependencies = [
+              sources."kind-of-3.2.2"
+            ];
+          })
+          (sources."is-data-descriptor-0.1.4" // {
+            dependencies = [
+              sources."kind-of-3.2.2"
+            ];
+          })
+          sources."is-descriptor-0.1.6"
+          sources."kind-of-5.1.0"
         ];
       })
       (sources."snapdragon-node-2.1.1" // {
         dependencies = [
           sources."define-property-1.0.0"
-          sources."is-accessor-descriptor-1.0.0"
-          sources."is-data-descriptor-1.0.0"
-          sources."is-descriptor-1.0.2"
         ];
       })
       (sources."snapdragon-util-3.0.1" // {
@@ -3066,6 +3058,18 @@ let
       (sources."static-extend-0.1.2" // {
         dependencies = [
           sources."define-property-0.2.5"
+          (sources."is-accessor-descriptor-0.1.6" // {
+            dependencies = [
+              sources."kind-of-3.2.2"
+            ];
+          })
+          (sources."is-data-descriptor-0.1.4" // {
+            dependencies = [
+              sources."kind-of-3.2.2"
+            ];
+          })
+          sources."is-descriptor-0.1.6"
+          sources."kind-of-5.1.0"
         ];
       })
       sources."stream-browserify-2.0.2"
@@ -3127,7 +3131,6 @@ let
       sources."util-deprecate-1.0.2"
       sources."vm-browserify-1.1.2"
       sources."watchpack-1.6.0"
-      sources."webpack-4.41.6"
       (sources."webpack-sources-1.4.3" // {
         dependencies = [
           sources."source-map-0.6.1"
@@ -3141,16 +3144,12 @@ let
     ];
     buildInputs = globalBuildInputs;
     meta = {
-      description = "";
-      license = "ISC";
+      description = "Packs CommonJs/AMD modules for the browser. Allows to split your codebase into multiple bundles, which can be loaded on demand. Support loaders to preprocess files, i.e. json, jsx, es7, css, less, ... and your custom stuff.";
+      homepage = https://github.com/webpack/webpack;
+      license = "MIT";
     };
-    production = false;
+    production = true;
     bypassCache = true;
-    reconstructLock = false;
+    reconstructLock = true;
   };
-in
-{
-  tarball = nodeEnv.buildNodeSourceDist args;
-  package = nodeEnv.buildNodePackage args;
-  shell = nodeEnv.buildNodeShell args;
 }
