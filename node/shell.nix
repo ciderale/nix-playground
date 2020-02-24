@@ -63,6 +63,6 @@ in
 
 mkShell {
 
-  # include the update script and the correct version of nodejs itself
-  buildInputs = [ nodejs myNodePackage ];
+  # include nodejs dependencies in the correct version
+  buildInputs = [ myNodePackage ];
 }
