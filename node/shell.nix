@@ -5,7 +5,7 @@ let
   # the commoand to generate nix expressions from package-lock.json
   nodix = pkgs.writers.writeBashBin "nodix" ''
     rm -rf ./node_modules
-    node2nix --nodejs-12 -l package-lock.json
+    node2nix -d --nodejs-12 -l package-lock.json
   '';
 in
 with pkgs;
