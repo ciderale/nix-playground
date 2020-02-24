@@ -20,6 +20,7 @@ let
       let baseName = baseNameOf (toString path);
        in baseName == "package.json" || baseName == "package-lock.json";
 
+    # import generated node2nix defintion with buildInputs override
     importNodeDependencies = { path ? ./., buildInputs ? []}: let
       n2n = import path { pkgs=self; };
     in n2n.shell.override {
@@ -28,6 +29,18 @@ let
       # we only fetch dependencies, don't package the project for nix
       src = builtins.filterSource self.onlyPackageJsonOrLock ./.;
     };
+
+    # create a setup-hook to add NODE_PATH and PATH for npm dependencies
+    importNodeSetupHook = pkg: super.writeTextDir "/nix-support/setup-hook" ''
+      addToSearchPath NODE_PATH ${pkg.nodeDependencies}/lib/node_modules
+      addToSearchPath PATH ${pkg.nodeDependencies}/bin
+    '';
+
+    # import generated node2nix defintion with buildInputs override
+    # and create an environment with all npm depenedencies available
+    importNodeDep = { path ? ./., buildInputs ? []}@args: let
+      myNodePackageRaw = self.importNodeDependencies args;
+    in self.importNodeSetupHook myNodePackageRaw;
   };
 
   # load your favourite nixpkgs set and select the nodejs version
@@ -40,17 +53,11 @@ in with pkgs; let
   # and override to slightly customize the generated node project dependencies
   # NOTE: this may require adjustments to your selected npm packages
   # the current example depends on fsevents which requires CoreService os Mac
-  myNodePackageRaw = importNodeDependencies {
+  myNodePackage = importNodeDep {
     buildInputs = lib.optionals stdenv.isDarwin (
       with darwin.apple_sdk.frameworks; [CoreServices]
     );
   };
-
-  # create a setup-hook to adjust NODE_PATH and PATH environment variables
-  myNodePackage = writeTextDir "/nix-support/setup-hook" ''
-    addToSearchPath NODE_PATH ${myNodePackageRaw.nodeDependencies}/lib/node_modules
-    addToSearchPath PATH ${myNodePackageRaw.nodeDependencies}/bin
-  '';
 in
 
 mkShell {
