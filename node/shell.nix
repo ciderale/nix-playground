@@ -17,7 +17,8 @@ let
   # this exposes variant exposes all the defined packages
   # and thus suitable for overrides
   nodix2 = pkgs.writers.writeBashBin "nodix2" ''
-    node2nix --nodejs-12 -i devDeps.json
+    rm -rf ./node_modules
+    node2nix --nodejs-12 -i <(cat package.json| jq '.devDependencies | to_entries | map({(.key): .value})')
   '';
 in
 with pkgs;
@@ -25,7 +26,7 @@ with pkgs;
 mkShell {
   #inherit (np.shell) shellHook nodeDependencies;
   buildInputs = [nodejs-12_x nodePackages_12_x.node2nix 
-    nodix nodix2
-    np.webpack
+   nodix nodix2
+ #   np.webpack
   ];
 }

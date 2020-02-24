@@ -2671,7 +2671,7 @@ let
   };
 in
 {
-  webpack = nodeEnv.buildNodePackage {
+  "webpack-^4.41.6" = nodeEnv.buildNodePackage {
     name = "webpack";
     packageName = "webpack";
     version = "4.41.6";
