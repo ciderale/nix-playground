@@ -11,8 +11,7 @@ let
      in baseName == "package.json" || baseName == "package-lock.json";
 
   # override to slightly customize the generated node project dependencies
-  np = n2n // {
-    shell = n2n.shell.override {
+  myNodePackage = n2n.shell.override {
       # buildInput needed to build webpack
       buildInputs = with pkgs.darwin.apple_sdk.frameworks; [CoreServices];
 
@@ -20,7 +19,6 @@ let
       # we only fetch dependencies, don't package the project for nix
       src = builtins.filterSource onlyPackageJsons ./.;
     };
-  };
 
   # the commoand to generate nix expressions from package-lock.json
   nodix = pkgs.writers.writeBashBin "nodix" ''
@@ -33,7 +31,7 @@ with pkgs;
 
 mkShell {
   # inherit the shellHook (and its nodeDependency)
-  inherit (np.shell) shellHook nodeDependencies;
+  inherit (myNodePackage) shellHook nodeDependencies;
 
   buildInputs = [
     # the node version to be used
