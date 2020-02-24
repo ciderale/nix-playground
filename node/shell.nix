@@ -8,6 +8,11 @@ let
     let baseName = baseNameOf (toString path);
      in baseName == "package.json" || baseName == "package-lock.json";
 
+  # NOTE: select the nodejs version you like to use
+  nodeVersion = "12";
+  njs = pkgs."nodejs-${nodeVersion}_x";
+  njsPkgs = pkgs."nodePackages_${nodeVersion}_x".node2nix;
+
   # load the node2nix generated default.nix file
   n2n = import ./. { inherit pkgs; };
   # and override to slightly customize the generated node project dependencies
@@ -21,12 +26,12 @@ let
       src = builtins.filterSource onlyPackageJsons ./.;
     };
 
-  # the commoand to generate nix expressions from package-lock.json
+  # the command to generate nix expressions from package-lock.json
   # run 'npm install --save[-dev] your depenency' to generate the lock file
   # run 'nodeix' to generate the necessary nix files replicating the lock
   nodix = pkgs.writers.writeBashBin "nodix" ''
     rm -rf ./node_modules # node2nix complains as node_modules interfer
-    node2nix -d --nodejs-12 -l package-lock.json
+    ${njsPkgs}/bin/node2nix -d --nodejs-${nodeVersion} -l package-lock.json
   '';
 in
 
@@ -36,10 +41,6 @@ mkShell {
   # inherit the shellHook (and its nodeDependency)
   inherit (myNodePackage) shellHook nodeDependencies;
 
-  buildInputs = [
-    # the node version to be used
-    nodejs-12_x nodePackages_12_x.node2nix
-    # our little helper script
-    nodix
-  ];
+  # include the update script and the correct version of nodejs itself
+  buildInputs = [ njs nodix ];
 }
