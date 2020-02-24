@@ -12,6 +12,10 @@ let
   nodix = pkgs.writers.writeBashBin "nodix" ''
     rm -rf ./node_modules
     node2nix -d --nodejs-12 -l package-lock.json
+    TD=./tmp
+    mkdir -p $TD
+    cp package{,-lock}.json $TD
+    sed -i "s?src = ./.;?src = $TD;?" ./node-packages.nix
   '';
 in
 with pkgs;
