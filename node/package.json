@@ -11,5 +11,8 @@
   "dependencies": {
     "angular": "^1.7.9",
     "lodash": "^4.17.15"
+  },
+  "devDependencies": {
+    "webpack": "^4.41.6"
   }
 }
