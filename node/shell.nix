@@ -1,8 +1,7 @@
 let
-  nodejsSelect = self: super: rec {
-    # NOTE: select the nodejs version you like to use
-    nodeVersion = "12";
-    njs = super."nodejs-${nodeVersion}_x";
+  # overlay to select the nodejs version
+  selectNodejs = nodeVersion: self: super: {
+    nodejs = super."nodejs-${nodeVersion}_x";
     njsPkgs = super."nodePackages_${nodeVersion}_x".node2nix;
 
     # the command to generate nix expressions from package-lock.json
@@ -10,12 +9,13 @@ let
     # run 'nodeix' to generate the necessary nix files replicating the lock
     nodix = super.writers.writeBashBin "nodix" ''
       rm -rf ./node_modules # node2nix complains as node_modules interfer
-      ${njsPkgs}/bin/node2nix -d --nodejs-${nodeVersion} -l package-lock.json
+      ${self.njsPkgs}/bin/node2nix -d --nodejs-${nodeVersion} -l package-lock.json
     '';
   };
 
-  # load your favourite nixpkgs set
-  pkgs = import ../nixpkgs.nix { overlays = [nodejsSelect]; };
+  # load your favourite nixpkgs set and select the nodejs version
+  # NOTE: select the nodejs version you like to use
+  pkgs = import ../nixpkgs.nix { overlays = [(selectNodejs "12")]; };
 
   # filter to retain only package.json and its lock file
   # this is minimal, when only npm depenency shall be managed
@@ -46,5 +46,5 @@ mkShell {
   inherit (myNodePackage) shellHook nodeDependencies;
 
   # include the update script and the correct version of nodejs itself
-  buildInputs = [ njs nodix ];
+  buildInputs = [ nodejs nodix ];
 }
