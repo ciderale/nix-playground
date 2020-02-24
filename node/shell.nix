@@ -34,6 +34,7 @@ let
     importNodeSetupHook = pkg: super.writeTextDir "/nix-support/setup-hook" ''
       addToSearchPath NODE_PATH ${pkg.nodeDependencies}/lib/node_modules
       addToSearchPath PATH ${pkg.nodeDependencies}/bin
+      addToSearchPath PATH ${self.nodix}/bin
     '';
 
     # import generated node2nix defintion with buildInputs override
@@ -63,5 +64,5 @@ in
 mkShell {
 
   # include the update script and the correct version of nodejs itself
-  buildInputs = [ nodejs nodix myNodePackage ];
+  buildInputs = [ nodejs myNodePackage ];
 }
