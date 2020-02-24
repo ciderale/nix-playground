@@ -17,14 +17,16 @@ let
   n2n = import ./. { inherit pkgs; };
   # and override to slightly customize the generated node project dependencies
   myNodePackage = n2n.shell.override {
-      # buildInput needed to build e.g. webpack
-      # NOTE: this may require adjustments to your selected npm packages
-      buildInputs = with pkgs.darwin.apple_sdk.frameworks; [CoreServices];
+    # NOTE: this may require adjustments to your selected npm packages
+    # the current example depends on fsevents which requires CoreService os Mac
+    buildInputs = pkgs.lib.optionals pkgs.stdenv.isDarwin (
+      with pkgs.darwin.apple_sdk.frameworks; [CoreServices]
+    );
 
-      # ignore everything, but the package dependency definition
-      # we only fetch dependencies, don't package the project for nix
-      src = builtins.filterSource onlyPackageJsons ./.;
-    };
+    # ignore everything, but the package dependency definition
+    # we only fetch dependencies, don't package the project for nix
+    src = builtins.filterSource onlyPackageJsons ./.;
+  };
 
   # the command to generate nix expressions from package-lock.json
   # run 'npm install --save[-dev] your depenency' to generate the lock file
