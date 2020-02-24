@@ -1,5 +1,5 @@
 let
-  # load your favourite nixpackage set
+  # load your favourite nixpkgs set
   pkgs = import ../nixpkgs.nix {};
 
   # filter to retain only package.json and its lock file
