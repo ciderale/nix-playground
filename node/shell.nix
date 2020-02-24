@@ -20,7 +20,7 @@ let
       let baseName = baseNameOf (toString path);
        in baseName == "package.json" || baseName == "package-lock.json";
 
-    importNodeDependencies = { path, buildInputs }: let
+    importNodeDependencies = { path ? ./., buildInputs ? []}: let
       n2n = import path { pkgs=self; };
     in n2n.shell.override {
       inherit buildInputs;
@@ -41,7 +41,6 @@ in with pkgs; let
   # NOTE: this may require adjustments to your selected npm packages
   # the current example depends on fsevents which requires CoreService os Mac
   myNodePackage = importNodeDependencies {
-    path = ./.;
     buildInputs = lib.optionals stdenv.isDarwin (
       with darwin.apple_sdk.frameworks; [CoreServices]
     );
