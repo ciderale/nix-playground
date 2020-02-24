@@ -3294,7 +3294,7 @@ let
     name = "node-sample";
     packageName = "node-sample";
     version = "1.0.0";
-    src = ./tmp;
+    src = ./.;
     dependencies = [
       sources."@webassemblyjs/ast-1.8.5"
       sources."@webassemblyjs/floating-point-hex-parser-1.8.5"

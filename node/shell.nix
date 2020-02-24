@@ -5,6 +5,7 @@ let
   np = n2n // {
     shell = n2n.shell.override {
       buildInputs = with pkgs.darwin.apple_sdk.frameworks; [CoreServices];
+      src = ./tmp;
     };
   };
 
@@ -15,7 +16,6 @@ let
     TD=./tmp
     mkdir -p $TD
     cp package{,-lock}.json $TD
-    sed -i "s?src = ./.;?src = $TD;?" ./node-packages.nix
   '';
 in
 with pkgs;
