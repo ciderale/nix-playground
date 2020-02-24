@@ -40,17 +40,21 @@ in with pkgs; let
   # and override to slightly customize the generated node project dependencies
   # NOTE: this may require adjustments to your selected npm packages
   # the current example depends on fsevents which requires CoreService os Mac
-  myNodePackage = importNodeDependencies {
+  myNodePackageRaw = importNodeDependencies {
     buildInputs = lib.optionals stdenv.isDarwin (
       with darwin.apple_sdk.frameworks; [CoreServices]
     );
   };
+
+  # create a setup-hook to adjust NODE_PATH and PATH environment variables
+  myNodePackage = writeTextDir "/nix-support/setup-hook" ''
+    addToSearchPath NODE_PATH ${myNodePackageRaw.nodeDependencies}/lib/node_modules
+    addToSearchPath PATH ${myNodePackageRaw.nodeDependencies}/bin
+  '';
 in
 
 mkShell {
-  # inherit the shellHook (and its nodeDependency)
-  inherit (myNodePackage) shellHook nodeDependencies;
 
   # include the update script and the correct version of nodejs itself
-  buildInputs = [ nodejs nodix ];
+  buildInputs = [ nodejs nodix myNodePackage ];
 }
