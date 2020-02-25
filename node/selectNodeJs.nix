@@ -26,21 +26,20 @@ in {
     addToSearchPath PATH ${self.nodix}/bin
   '';
 
-  # import generated node2nix definition with buildInputs override
-  callNode2nix = path: { buildInputs ? []}: let
-    node2nixRaw = import path { pkgs=self; };
-    customize = _: p: p.override {
-      inherit buildInputs;
-      # ignore everything, but the package dependency definition
-      # we only fetch dependencies, don't package the project for nix
-      src = builtins.filterSource self.onlyPackageJsonOrLock path;
-    };
-    node2nixCustomized = builtins.mapAttrs customize node2nixRaw;
-    in node2nixCustomized.shell;
-
-  # import generated node2nix defintion with buildInputs override
-  # and create an environment with all npm depenedencies available
-  callNode2nixEnv = path: { buildInputs ? [] }@args: let
-    myNodePackageRaw = self.callNode2nix path args;
-  in self.makeNodeEnv myNodePackageRaw;
+  # import and customize generated node2nix definition
+  # use only package(-lock).json and add a buildInput ready environment
+  callNode2nix = path: { buildInputs ? [] }:
+    let
+      node2nixRaw = import path { pkgs = self; };
+      customize = _: p: p.override {
+        # use the provide additional buildInputs
+        inherit buildInputs;
+        # ignore everything, but the package dependency definition
+        # we only fetch dependencies, don't package the project for nix
+        src = builtins.filterSource self.onlyPackageJsonOrLock path;
+      };
+      node2nixCustomized = builtins.mapAttrs customize node2nixRaw;
+      # create an environment with all npm depenedencies available
+      node2nixEnv = self.makeNodeEnv node2nixCustomized.shell;
+    in node2nixCustomized // { env = node2nixEnv; };
 }

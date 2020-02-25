@@ -10,7 +10,7 @@ in with pkgs; let
   # and override to slightly customize the generated node project dependencies
   # NOTE: this may require adjustments to your selected npm packages
   # the current example depends on fsevents which requires CoreService os Mac
-  myNodePackage = callNode2nixEnv ./. {
+  myNodePackage = callNode2nix ./. {
     buildInputs = lib.optionals stdenv.isDarwin (
       with darwin.apple_sdk.frameworks; [CoreServices]
     );
@@ -20,5 +20,5 @@ in
 mkShell {
 
   # include nodejs dependencies in the correct version
-  buildInputs = [ nodejs myNodePackage ];
+  buildInputs = [ nodejs myNodePackage.env ];
 }
