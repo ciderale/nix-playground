@@ -20,7 +20,7 @@ in {
      in baseName == "package.json" || baseName == "package-lock.json";
 
   # import generated node2nix defintion with buildInputs override
-  importNodeDependencies = { path ? ./., buildInputs ? []}: let
+  importNodeDependencies = path: { buildInputs ? []}: let
     n2n = import path { pkgs=self; };
   in n2n.shell.override {
     inherit buildInputs;
@@ -38,7 +38,7 @@ in {
 
   # import generated node2nix defintion with buildInputs override
   # and create an environment with all npm depenedencies available
-  importNodeDep = { path ? ./., buildInputs ? []}@args: let
-    myNodePackageRaw = self.importNodeDependencies args;
+  importNodeDep = path: { buildInputs ? [] }@args: let
+    myNodePackageRaw = self.importNodeDependencies path args;
   in self.importNodeSetupHook myNodePackageRaw;
 }

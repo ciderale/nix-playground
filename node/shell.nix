@@ -10,7 +10,7 @@ in with pkgs; let
   # and override to slightly customize the generated node project dependencies
   # NOTE: this may require adjustments to your selected npm packages
   # the current example depends on fsevents which requires CoreService os Mac
-  myNodePackage = importNodeDep {
+  myNodePackage = importNodeDep ./. {
     buildInputs = lib.optionals stdenv.isDarwin (
       with darwin.apple_sdk.frameworks; [CoreServices]
     );
