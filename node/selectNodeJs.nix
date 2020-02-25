@@ -19,8 +19,15 @@ in {
     let baseName = baseNameOf (toString path);
      in baseName == "package.json" || baseName == "package-lock.json";
 
-  # import generated node2nix defintion with buildInputs override
-  importNodeDependencies = path: { buildInputs ? []}: let
+  # create a setup-hook to add NODE_PATH and PATH for npm dependencies
+  makeNodeEnv = pkg: super.writeTextDir "/nix-support/setup-hook" ''
+    addToSearchPath NODE_PATH ${pkg.nodeDependencies}/lib/node_modules
+    addToSearchPath PATH ${pkg.nodeDependencies}/bin
+    addToSearchPath PATH ${self.nodix}/bin
+  '';
+
+  # import generated node2nix definition with buildInputs override
+  callNode2nix = path: { buildInputs ? []}: let
     n2n = import path { pkgs=self; };
   in n2n.shell.override {
     inherit buildInputs;
@@ -29,16 +36,9 @@ in {
     src = builtins.filterSource self.onlyPackageJsonOrLock path;
   };
 
-  # create a setup-hook to add NODE_PATH and PATH for npm dependencies
-  importNodeSetupHook = pkg: super.writeTextDir "/nix-support/setup-hook" ''
-    addToSearchPath NODE_PATH ${pkg.nodeDependencies}/lib/node_modules
-    addToSearchPath PATH ${pkg.nodeDependencies}/bin
-    addToSearchPath PATH ${self.nodix}/bin
-  '';
-
   # import generated node2nix defintion with buildInputs override
   # and create an environment with all npm depenedencies available
-  importNodeDep = path: { buildInputs ? [] }@args: let
-    myNodePackageRaw = self.importNodeDependencies path args;
-  in self.importNodeSetupHook myNodePackageRaw;
+  callNode2nixEnv = path: { buildInputs ? [] }@args: let
+    myNodePackageRaw = self.callNode2nix path args;
+  in self.makeNodeEnv myNodePackageRaw;
 }
