@@ -28,13 +28,15 @@ in {
 
   # import generated node2nix definition with buildInputs override
   callNode2nix = path: { buildInputs ? []}: let
-    n2n = import path { pkgs=self; };
-  in n2n.shell.override {
-    inherit buildInputs;
-    # ignore everything, but the package dependency definition
-    # we only fetch dependencies, don't package the project for nix
-    src = builtins.filterSource self.onlyPackageJsonOrLock path;
-  };
+    node2nixRaw = import path { pkgs=self; };
+    customize = _: p: p.override {
+      inherit buildInputs;
+      # ignore everything, but the package dependency definition
+      # we only fetch dependencies, don't package the project for nix
+      src = builtins.filterSource self.onlyPackageJsonOrLock path;
+    };
+    node2nixCustomized = builtins.mapAttrs customize node2nixRaw;
+    in node2nixCustomized.shell;
 
   # import generated node2nix defintion with buildInputs override
   # and create an environment with all npm depenedencies available
