@@ -20,5 +20,5 @@ in
 mkShell {
 
   # include nodejs dependencies in the correct version
-  buildInputs = [ myNodePackage ];
+  buildInputs = [ nodejs myNodePackage ];
 }
