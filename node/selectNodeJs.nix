@@ -26,7 +26,7 @@ in {
     inherit buildInputs;
     # ignore everything, but the package dependency definition
     # we only fetch dependencies, don't package the project for nix
-    src = builtins.filterSource self.onlyPackageJsonOrLock ./.;
+    src = builtins.filterSource self.onlyPackageJsonOrLock path;
   };
 
   # create a setup-hook to add NODE_PATH and PATH for npm dependencies
