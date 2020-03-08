@@ -9,7 +9,7 @@ in
 with pkgs;
 mkShell {
   buildInputs = [
-    nodix
+    nodix nodejs
     marp.env
   ];
 }

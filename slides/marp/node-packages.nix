@@ -2634,8 +2634,8 @@ let
     };
   };
   args = {
-    name = "landslide";
-    packageName = "landslide";
+    name = "marp-sample";
+    packageName = "marp-sample";
     version = "1.0.0";
     src = ./.;
     dependencies = [
