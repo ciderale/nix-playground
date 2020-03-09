@@ -5,12 +5,15 @@ let
   buildInputs = [pkgs.darwin.apple_sdk.frameworks.CoreServices];
 
   marp = pkgs.callNode2nix ./slides/marp { inherit buildInputs; };
+  slide-js-tools = pkgs.callNode2nix ./slides/slide-js-tools { inherit buildInputs; };
+
 in
 with pkgs;
 mkShell {
   buildInputs = [
     nodix nodejs
     marp.env
+    slide-js-tools.env
   ];
 }
 
