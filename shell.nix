@@ -7,6 +7,10 @@ let
   marp = pkgs.callNode2nix ./slides/marp { inherit buildInputs; };
   slide-js-tools = pkgs.callNode2nix ./slides/slide-js-tools { inherit buildInputs; };
 
+  pd = import ./slides/pandoc {
+    inherit (pkgs) writers pandoc entr;
+  };
+
 in
 with pkgs;
 mkShell {
