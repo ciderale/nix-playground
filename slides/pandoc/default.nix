@@ -11,9 +11,10 @@ rec {
 
   slides-build = writers.writeBashBin "slides-build" ''
     DOCUMENT=$1
+    shift
     RJS=${revealJs}
     ln -sfT $RJS ./.rjs
-    ${pandoc}/bin/pandoc -t revealjs -s -o ''${DOCUMENT}.html "''$DOCUMENT" -V revealjs-url=./.rjs
+    ${pandoc}/bin/pandoc -t revealjs -s -o ''${DOCUMENT}.html "''$DOCUMENT" -V revealjs-url=./.rjs $@
   '';
 
   slides-pdf = writers.writeBashBin "slides-pdf" ''
