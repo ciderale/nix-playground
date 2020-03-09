@@ -8,7 +8,7 @@ let
   slide-js-tools = pkgs.callNode2nix ./slides/slide-js-tools { inherit buildInputs; };
 
   pd = import ./slides/pandoc {
-    inherit (pkgs) writers pandoc entr;
+    inherit (pkgs) writers pandoc entr fetchFromGitHub;
   };
 
 in

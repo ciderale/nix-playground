@@ -1,9 +1,19 @@
-{writers, pandoc, entr}:
+{writers, pandoc, entr, fetchFromGitHub}:
 
 rec {
+
+  revealJs = fetchFromGitHub {
+    owner = "hakimel";
+    repo = "reveal.js";
+    rev = "542bcab5691f152dd04fd7b3e402163b94275762";
+    sha256 = "0hv3kl4x291ifsvjfk95pdnl51fyd164h96rd44mcflsslslqpnx";
+  };
+
   slides-build = writers.writeBashBin "slides-build" ''
     DOCUMENT=$1
-    ${pandoc}/bin/pandoc -t revealjs -s -o ''${DOCUMENT}.html "''$DOCUMENT" -V revealjs-url=./tmp/reveal.js
+    RJS=${revealJs}
+    ln -sfT $RJS ./.rjs
+    ${pandoc}/bin/pandoc -t revealjs -s -o ''${DOCUMENT}.html "''$DOCUMENT" -V revealjs-url=./.rjs
   '';
 
   slides-pdf = writers.writeBashBin "slides-pdf" ''
