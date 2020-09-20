@@ -1,11 +1,19 @@
 let
+  sources = import ./nix/sources.nix;
   selectNodejs = import ./node/selectNodeJs.nix 12;
-  pkgs = import ./nixpkgs.nix {overlays=[selectNodejs];};
+  napalmOverlay = self: super: {
+    napalm = p: arg@{...}: let
+      np = self.callPackage sources.napalm arg;
+    in np.buildPackage p {};
+  };
+  pkgs = import sources.nixpkgs {
+    overlays=[selectNodejs napalmOverlay];
+  };
 
   buildInputs = [pkgs.darwin.apple_sdk.frameworks.CoreServices];
 
   marp = pkgs.callNode2nix ./slides/marp { inherit buildInputs; };
-  slide-js-tools = pkgs.callNode2nix ./slides/slide-js-tools { inherit buildInputs; };
+  slide-js-tools = pkgs.napalm ./slides/slide-js-tools { };
 
   pd = import ./slides/pandoc {
     inherit (pkgs) writers pandoc entr fetchFromGitHub;
