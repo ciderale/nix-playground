@@ -15,16 +15,25 @@ let
   marp = pkgs.napalm ./slides/marp { };
   slide-js-tools = pkgs.napalm ./slides/slide-js-tools { };
 
+  nixgrep = pkgs.writers.writeBashBin "nixgrep" ''
+    ${pkgs.ripgrep}/bin/rg $@ ${pkgs.path}
+  '';
+
   pd = import ./slides/pandoc {
     inherit (pkgs) writers pandoc entr fetchFromGitHub;
+    mkDerivation = pkgs.stdenv.mkDerivation;
   };
 
 in
 with pkgs;
 mkShell {
   buildInputs = [
-    marp
+    nodejs
+    #marp
     slide-js-tools
+    (builtins.attrValues pd)
+    ripgrep
+    nixgrep
   ];
 }
 
