@@ -3,5 +3,5 @@ Jinja2==2.10
 landslide==1.1.6
 Markdown==2.6.11
 MarkupSafe==1.1.1
-Pygments==2.2.0
+Pygments==2.7.4
 six==1.11.0
